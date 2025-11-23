@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ur10_camera_3f_gripper">
+
+  <!-- Args -->
+  <xacro:arg name="tf_prefix" default=""/>
+  <xacro:arg name="use_fake_hardware" default="true"/>
+  <xacro:arg name="headless_mode" default="false"/>
+  <xacro:arg name="robot_ip" default="0.0.0.0"/>
+
+  <!-- UR params -->
+  <xacro:arg name="joint_limits_parameters_file"
+             default="$(find ur_description)/config/ur10/joint_limits.yaml"/>
+  <xacro:arg name="kinematics_parameters_file"
+             default="$(find ur_description)/config/ur10/default_kinematics.yaml"/>
+  <xacro:arg name="physical_parameters_file"
+             default="$(find ur_description)/config/ur10/physical_parameters.yaml"/>
+  <xacro:arg name="visual_parameters_file"
+             default="$(find ur_description)/config/ur10/visual_parameters.yaml"/>
+
+  <!-- Includes -->
+  <xacro:include filename="$(find ur_yt_sim)/urdf/ur10_macro.xacro"/>
+  <xacro:include filename="$(find robotiq_3f_description)/urdf/robotiq_3f_gripper.urdf.xacro"/>
+
+  <!-- UR10 base -->
+  <xacro:ur_robot
+      name="ur10"
+      tf_prefix="$(arg tf_prefix)"
+      parent="world"
+      joint_limits_parameters_file="$(arg joint_limits_parameters_file)"
+      kinematics_parameters_file="$(arg kinematics_parameters_file)"
+      physical_parameters_file="$(arg physical_parameters_file)"
+      visual_parameters_file="$(arg visual_parameters_file)"
+      generate_ros2_control_tag="true"
+      use_fake_hardware="$(arg use_fake_hardware)"
+      fake_sensor_commands="false"
+      sim_gazebo="true"
+      sim_ignition="false"
+      headless_mode="$(arg headless_mode)"
+      robot_ip="$(arg robot_ip)">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ur_robot>
+
+  <!-- Attach 3F gripper to tool0 -->
+  <xacro:robotiq_3f_gripper
+      prefix="$(arg tf_prefix)"
+      parent="$(arg tf_prefix)tool0">
+    <origin xyz="0 0 0" rpy="0 0 1.5708"/>
+  </xacro:robotiq_3f_gripper>
+
+</robot>

@@ -5,16 +5,14 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    # UR10 Arm Controller
-    scaled_joint_trajectory_controller:
+    ur10_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-    # Robotiq 3F Gripper Controller
-    robotiq_3f_gripper_controller:
+    gripper_controller:
       type: position_controllers/GripperActionController
 
-# UR10 Configuration
-scaled_joint_trajectory_controller:
+# UR10 Joint Trajectory Controller Configuration
+ur10_controller:
   ros__parameters:
     joints:
       - shoulder_pan_joint
@@ -41,44 +39,56 @@ scaled_joint_trajectory_controller:
     constraints:
       stopped_velocity_tolerance: 0.01
       goal_time: 0.0
-
-# Robotiq 3F Gripper Configuration
-robotiq_3f_gripper_controller:
+      
+# Gripper Controller Configuration for Robotiq 3F
+gripper_controller:
   ros__parameters:
-    joint: palm_finger_1_joint
+    # The 3F gripper has multiple joints, but we typically control the base joint
+    # For simplified control, we can use just one of the actuator joints
+    joint: finger_1_joint_1  # Main actuator joint
+    
     action_monitor_rate: 20.0
-    state_publish_rate: 25.0
-    goal_tolerance: 0.01
+    
+    # Gripper command interface
+    command_interface: position
+    
+    # State interfaces
+    state_interfaces:
+      - position
+      - velocity
+    
+    # Gripper-specific parameters
     max_effort: 100.0
-    allow_partial_joints_goal: false
-    open_loop_control: false
-    constraints:
-      goal_time: 0.0
-      stopped_velocity_tolerance: 0.01
+    max_velocity: 0.5
+    
+    # Goal tolerance
+    goal_tolerance: 0.01
+    max_position_error: 0.02
+    max_velocity_error: 0.1
 
 # Joint State Broadcaster
 joint_state_broadcaster:
   ros__parameters:
     joints:
-      # UR10 joints
       - shoulder_pan_joint
       - shoulder_lift_joint
       - elbow_joint
       - wrist_1_joint
       - wrist_2_joint
       - wrist_3_joint
-      # Robotiq 3F gripper joints
-      - palm_finger_1_joint
+      # Robotiq 3F Gripper joints
       - finger_1_joint_1
       - finger_1_joint_2
       - finger_1_joint_3
-      - palm_finger_2_joint
       - finger_2_joint_1
       - finger_2_joint_2
       - finger_2_joint_3
       - finger_middle_joint_1
       - finger_middle_joint_2
       - finger_middle_joint_3
+      - palm_finger_1_joint
+      - palm_finger_2_joint
+    
     interfaces:
       - position
       - velocity
